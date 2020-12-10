@@ -1,0 +1,95 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-kapt'
+
+apply plugin: 'kotlin-android-extensions'
+
+android {
+  compileSdkVersion rootProject.ext.compileSdkVersion
+  defaultConfig {
+    applicationId "com.raywenderlich.android.rwquotes"
+    minSdkVersion rootProject.ext.minSdkVersion
+    targetSdkVersion rootProject.ext.targetSdkVersion
+    versionCode 1
+    versionName "1.0"
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+    javaCompileOptions {
+      annotationProcessorOptions {
+        arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+      }
+    }
+    testOptions {
+      unitTests.returnDefaultValues = true
+    }
+  }
+
+  sourceSets {
+    androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+  }
+}
+
+dependencies {
+  implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+  // Kotlin
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+
+  // Support Libraries
+  implementation 'androidx.appcompat:appcompat:1.1.0'
+  implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta8'
+
+  // App dependencies
+  implementation "androidx.cardview:cardview:1.0.0"
+  implementation "com.google.android.material:material:1.1.0"
+  implementation "androidx.recyclerview:recyclerview:1.1.0"
+  implementation "androidx.annotation:annotation:1.1.0"
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5"
+  implementation "com.jakewharton.timber:timber:4.7.1"
+
+  // Architecture Components
+  implementation "androidx.room:room-runtime:2.2.5"
+  kapt "androidx.room:room-compiler:2.2.5"
+  implementation "androidx.room:room-ktx:2.2.5"
+  implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
+  kapt "androidx.lifecycle:lifecycle-compiler:2.3.0-alpha06"
+  implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0-alpha06"
+  implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.3.0-alpha06"
+
+
+  // Dependencies for local unit tests
+  testImplementation "junit:junit:4.13"
+  testImplementation "androidx.arch.core:core-testing:2.1.0"
+  testImplementation "org.robolectric:robolectric:4.3.1"
+  testImplementation 'org.mockito:mockito-inline:2.8.47'
+
+  // Dependencies for Android instrumented unit tests
+  androidTestImplementation "junit:junit:4.13"
+  androidTestImplementation "org.mockito:mockito-core:3.2.4"
+  androidTestImplementation "android.arch.persistence.room:testing:2.2.5"
+  androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:2.12.1"
+  androidTestImplementation "android.arch.persistence.room:testing:1.1.1"
+  androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+  androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+
+  // AndroidX Test - JVM testing
+  testImplementation "androidx.test:core-ktx:1.2.0"
+  testImplementation "androidx.test.ext:junit:1.1.1"
+
+
+  // AndroidX Test - Instrumented testing
+  androidTestImplementation "androidx.test.ext:junit:1.1.1"
+  androidTestImplementation "androidx.arch.core:core-testing:2.1.0"
+
+
+}
