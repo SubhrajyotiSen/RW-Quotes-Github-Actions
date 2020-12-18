@@ -24,9 +24,16 @@ jobs:
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
+      - uses: actions/upload-artifact@master
+        with:
+          name: release.apk
+          path: ${{steps.sign_app.outputs.signedReleaseFile}}
 
   release:
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.vars.outputs.tag }}
+      uploadUrl: ${{ steps.create_release.outputs.upload_url }} 
     steps:
       - name: Create Release
         id: create_release
@@ -46,15 +53,18 @@ jobs:
     needs: [build, release]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/download-artifact@master
+        with:
+          name: release.apk
       - name: Upload Release Asset
         id: upload-release-asset 
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{steps.sign_app.outputs.signedReleaseFile}}
-          asset_name: RW-Quotes-${{ steps.vars.outputs.tag }}.apk
+          upload_url: ${{ needs.release.outputs.uploadUrl }}
+          asset_path: release.apk
+          asset_name: RW-Quotes-${{ needs.release.outputs.tag }}.apk
           asset_content_type: application/zip
   
   deploy-firebase:
