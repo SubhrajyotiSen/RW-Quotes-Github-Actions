@@ -64,7 +64,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.release.outputs.uploadUrl }}
-          asset_path: release.apk
+          asset_path: app-release-unsigned-signed.apk
           asset_name: RW-Quotes-${{ needs.release.outputs.tag }}.apk
           asset_content_type: application/zip
   
