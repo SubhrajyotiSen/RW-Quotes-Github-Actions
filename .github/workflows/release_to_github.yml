@@ -95,7 +95,7 @@ jobs:
           name: release.apk
       - uses: actions/download-artifact@master
         with:
-          name: release.apk
+          name: mapping.txt
       - name: Publish to Play Store internal test track
         uses: r0adkll/upload-google-play@v1
         with:
