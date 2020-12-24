@@ -34,7 +34,7 @@
 
 package com.raywenderlich.android.rwquotes.data
 
-import androidx.lifecycle.LiveData
+import kotlinx.coroutines.flow.Flow
 
 
 /**
@@ -51,5 +51,5 @@ interface QuotesRepository {
 
   fun delete(quote: Quote)
 
-  fun getQuotes(): LiveData<List<Quote>>
+  fun getQuotes(): Flow<List<Quote>>
 }

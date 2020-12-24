@@ -34,8 +34,8 @@
 
 package com.raywenderlich.android.rwquotes.data
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 
 
 /**
@@ -47,7 +47,7 @@ import androidx.room.*
 interface QuotesDao {
 
   @Query("SELECT * FROM rwquotes ORDER BY id DESC")
-  fun getQuotes(): LiveData<List<Quote>>
+  fun getQuotes(): Flow<List<Quote>>
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   fun insertQuote(quote: Quote) : Long

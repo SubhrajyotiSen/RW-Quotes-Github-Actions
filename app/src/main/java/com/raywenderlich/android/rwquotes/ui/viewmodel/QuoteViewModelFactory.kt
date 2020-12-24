@@ -34,10 +34,10 @@
 
 package com.raywenderlich.android.rwquotes.ui.viewmodel
 
-import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.raywenderlich.android.rwquotes.data.QuotesRepository
+import kotlinx.coroutines.CoroutineDispatcher
 
 
 /**
@@ -46,11 +46,10 @@ import com.raywenderlich.android.rwquotes.data.QuotesRepository
  */
 
 class QuoteViewModelFactory(
-    private val repository: QuotesRepository,
-    private val application: Application
+    private val repository: QuotesRepository
 ) : ViewModelProvider.Factory {
   override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-    return QuotesViewModel(application, repository) as T
+    return QuotesViewModel(repository) as T
   }
 
 }

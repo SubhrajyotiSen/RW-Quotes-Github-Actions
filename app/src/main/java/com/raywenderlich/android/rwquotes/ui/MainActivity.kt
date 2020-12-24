@@ -34,6 +34,7 @@
 
 package com.raywenderlich.android.rwquotes.ui
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -65,7 +66,7 @@ class MainActivity : AppCompatActivity() {
 
     quotesViewModel = ViewModelProvider(
         this,
-        QuoteViewModelFactory(QuotesRepositoryImpl(application = application), application)
+        QuoteViewModelFactory(QuotesRepositoryImpl(application = application))
     ).get(QuotesViewModel::class.java)
 
 
@@ -97,29 +98,31 @@ class MainActivity : AppCompatActivity() {
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     super.onActivityResult(requestCode, resultCode, data)
-    when (requestCode) {
-      ADD_QUOTE_REQUEST_CODE -> {
-        val intentData = data!!
-        val newNote = Quote(
-            text = intentData.getStringExtra(AddEditActivity.EXTRA_TEXT)!!,
-            author = intentData.getStringExtra(AddEditActivity.EXTRA_AUTHOR)!!,
-            date = intentData.getStringExtra(AddEditActivity.EXTRA_DATE)!!
-        )
-        quotesViewModel.insertQuote(newNote)
-        Toast.makeText(this, "Quote saved!", Toast.LENGTH_SHORT).show()
-      }
-      EDIT_QUOTE_REQUEST_CODE -> {
-        val intentData = data!!
-        val updateQuote = Quote(
-            text = intentData.getStringExtra(AddEditActivity.EXTRA_TEXT)!!,
-            author = intentData.getStringExtra(AddEditActivity.EXTRA_AUTHOR)!!,
-            date = intentData.getStringExtra(AddEditActivity.EXTRA_DATE)!!
-        )
-        quotesViewModel.updateQuote(updateQuote)
-        Toast.makeText(this, "Quote updated!", Toast.LENGTH_SHORT).show()
-      }
-      else -> {
-        Toast.makeText(this, "Not found!", Toast.LENGTH_SHORT).show()
+    if (resultCode == Activity.RESULT_OK) {
+      when (requestCode) {
+        ADD_QUOTE_REQUEST_CODE -> {
+          val intentData = data!!
+          val newNote = Quote(
+              text = intentData.getStringExtra(AddEditActivity.EXTRA_TEXT)!!,
+              author = intentData.getStringExtra(AddEditActivity.EXTRA_AUTHOR)!!,
+              date = intentData.getStringExtra(AddEditActivity.EXTRA_DATE)!!
+          )
+          quotesViewModel.insertQuote(newNote)
+          Toast.makeText(this, "Quote saved!", Toast.LENGTH_SHORT).show()
+        }
+        EDIT_QUOTE_REQUEST_CODE -> {
+          val intentData = data!!
+          val updateQuote = Quote(
+              text = intentData.getStringExtra(AddEditActivity.EXTRA_TEXT)!!,
+              author = intentData.getStringExtra(AddEditActivity.EXTRA_AUTHOR)!!,
+              date = intentData.getStringExtra(AddEditActivity.EXTRA_DATE)!!
+          )
+          quotesViewModel.updateQuote(updateQuote)
+          Toast.makeText(this, "Quote updated!", Toast.LENGTH_SHORT).show()
+        }
+        else -> {
+          Toast.makeText(this, "Not found!", Toast.LENGTH_SHORT).show()
+        }
       }
     }
   }

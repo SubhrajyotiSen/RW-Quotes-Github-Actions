@@ -35,10 +35,10 @@
 package com.raywenderlich.android.rwquotes.data
 
 import android.app.Application
-import androidx.lifecycle.LiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
@@ -76,7 +76,7 @@ class QuotesRepositoryImpl(application: Application) : QuotesRepository, Corouti
     launch(Dispatchers.IO) { quotesDao.deleteQuote(quote) }
   }
 
-  override fun getQuotes(): LiveData<List<Quote>> {
+  override fun getQuotes(): Flow<List<Quote>> {
     return quotesDao.getQuotes()
   }
 

@@ -37,18 +37,16 @@ package com.raywenderlich.android.rwquotes
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.raywenderlich.android.rwquotes.data.Quote
 import com.raywenderlich.android.rwquotes.data.QuotesRepositoryImpl
 import com.raywenderlich.android.rwquotes.ui.viewmodel.QuotesViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.spy
 import org.mockito.MockitoAnnotations
 
 
@@ -57,20 +55,19 @@ import org.mockito.MockitoAnnotations
  * Contact: lizama.enzo@gmail.com
  */
 
-@RunWith(AndroidJUnit4::class)
+@ExperimentalCoroutinesApi
 class QuotesViewModelTest {
 
   @Mock
   private lateinit var viewModel: QuotesViewModel
 
   @Mock
-  private lateinit var isLoadingLiveData: LiveData<Boolean>
-
-  @Mock
-  private lateinit var observer: Observer<Boolean>
+  private lateinit var repositoryImpl: QuotesRepositoryImpl
 
   @get:Rule
   var instantExecutorRule = InstantTaskExecutorRule()
+
+  private lateinit var isLoadingLiveData: LiveData<Boolean>
 
   /**
    * Setup values before init tests
@@ -80,22 +77,8 @@ class QuotesViewModelTest {
   fun setup() {
     MockitoAnnotations.initMocks(this)
 
-    viewModel = spy(QuotesViewModel(ApplicationProvider.getApplicationContext(),
-        QuotesRepositoryImpl(ApplicationProvider.getApplicationContext())))
+    viewModel = spy(QuotesViewModel(repositoryImpl))
     isLoadingLiveData = viewModel.dataLoading
-  }
-
-  /**
-   * Testing *onChanged()* method for [LiveData]
-   *
-   */
-  @Test
-  fun `Verify livedata values changes on event`() {
-    assertNotNull(viewModel.getAllQuotes())
-    viewModel.dataLoading.observeForever(observer)
-    verify(observer).onChanged(false)
-    viewModel.getAllQuotes()
-    verify(observer).onChanged(true)
   }
 
   /**
@@ -107,7 +90,6 @@ class QuotesViewModelTest {
     val testQuote = Quote(id = 1, text = "Hello World!", author = "Ray Wenderlich",
         date = "27/12/1998")
     var isLoading = isLoadingLiveData.value
-    assertNotNull(isLoading)
     isLoading?.let { assertTrue(it) }
     viewModel.insertQuote(testQuote)
     isLoading = isLoadingLiveData.value
@@ -124,7 +106,6 @@ class QuotesViewModelTest {
     val testQuote = Quote(id = 1, text = "Hello World!", author = "Ray Wenderlich",
         date = "27/12/1998")
     var isLoading = isLoadingLiveData.value
-    assertNotNull(isLoading)
     isLoading?.let { assertTrue(it) }
     viewModel.delete(testQuote)
     isLoading = isLoadingLiveData.value
@@ -141,7 +122,6 @@ class QuotesViewModelTest {
     val testQuote = Quote(id = 1, text = "Hello World!", author = "Ray Wenderlich",
         date = "27/12/1998")
     var isLoading = isLoadingLiveData.value
-    assertNotNull(isLoading)
     isLoading?.let { assertTrue(it) }
     viewModel.updateQuote(testQuote)
     isLoading = isLoadingLiveData.value

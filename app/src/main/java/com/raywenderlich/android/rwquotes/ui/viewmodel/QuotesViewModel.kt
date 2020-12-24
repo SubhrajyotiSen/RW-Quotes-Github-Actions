@@ -34,13 +34,10 @@
 
 package com.raywenderlich.android.rwquotes.ui.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.raywenderlich.android.rwquotes.data.Quote
 import com.raywenderlich.android.rwquotes.data.QuotesRepository
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 
@@ -49,16 +46,10 @@ import kotlinx.coroutines.launch
  * Contact: lizama.enzo@gmail.com
  */
 
-class QuotesViewModel(application: Application, private val repository: QuotesRepository) :
-    AndroidViewModel(application) {
+class QuotesViewModel(private val repository: QuotesRepository) : ViewModel() {
 
   private val _dataLoading = MutableLiveData<Boolean>()
   val dataLoading: LiveData<Boolean> = _dataLoading
-
-  init {
-    _dataLoading.value = true
-  }
-
 
   fun insertQuote(quote: Quote) {
     _dataLoading.postValue(true)
@@ -84,14 +75,12 @@ class QuotesViewModel(application: Application, private val repository: QuotesRe
     _dataLoading.postValue(false)
   }
 
-  fun getAllQuotes(): LiveData<List<Quote>> {
-    var quotes: LiveData<List<Quote>>? = null
+  fun getAllQuotes(): LiveData<List<Quote>>  = liveData {
     _dataLoading.postValue(true)
-    viewModelScope.launch {
-      quotes = repository.getQuotes()
+    repository.getQuotes().collect { quotes ->
+      _dataLoading.postValue(false)
+      emit(quotes)
     }
-    _dataLoading.postValue(false)
-    return quotes!!
   }
 
 }
