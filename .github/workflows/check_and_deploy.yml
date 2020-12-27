@@ -1,13 +1,28 @@
+name: Test and deploy
+
 on:
   push:
-    # Sequence of patterns matched against refs/tags
-    tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
-
-name: GitHub Release
-
+  
 jobs:
+  unit_tests:
+    runs-on: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Unit tests
+        run: ./gradlew test
+  android_tests:
+    runs-on: [ macos-latest ]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: QA Android Tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          script: ./gradlew connectedQaDebugAndroidTest
   build:
+    needs: [unit_tests, android_tests]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -32,76 +47,3 @@ jobs:
         with:
           name: mapping.txt
           path: app/build/outputs/mapping/release/mapping.txt
-
-  release:
-    runs-on: ubuntu-latest
-    outputs:
-      tag: ${{ steps.vars.outputs.tag }}
-      uploadUrl: ${{ steps.create_release.outputs.upload_url }} 
-    steps:
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-      - name: Set output
-        id: vars
-        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-
-  deploy-github:
-    needs: [build, release]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@master
-        with:
-          name: release.apk
-      - name: Upload Release Asset
-        id: upload-release-asset 
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.release.outputs.uploadUrl }}
-          asset_path: app-release-unsigned-signed.apk
-          asset_name: RW-Quotes-${{ needs.release.outputs.tag }}.apk
-          asset_content_type: application/zip
-  
-  deploy-firebase:
-    needs: [build, release]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@master
-        with:
-          name: release.apk
-      - name: upload artifact to Firebase App Distribution
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
-        with:
-          appId: ${{secrets.FIREBASE_APP_ID}}
-          token: ${{secrets.FIREBASE_TOKEN}}
-          groups: tester
-          file: app-release-unsigned-signed.apk
-
-  deploy-play-store:
-    needs: [build, release]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@master
-        with:
-          name: release.apk
-      - uses: actions/download-artifact@master
-        with:
-          name: mapping.txt
-      - name: Publish to Play Store internal test track
-        uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
-          packageName: com.raywenderlich.android.rwquotes
-          releaseFile: app-release-unsigned-signed.apk
-          track: internal
-          userFraction: 0.99
-          mappingFile: mapping.txt
