@@ -45,8 +45,8 @@ import com.raywenderlich.android.rwquotes.data.MIGRATION_1_2
 import com.raywenderlich.android.rwquotes.data.MIGRATION_2_3
 
 import com.raywenderlich.android.rwquotes.data.RWQuotesDatabase
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.assertTrue
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

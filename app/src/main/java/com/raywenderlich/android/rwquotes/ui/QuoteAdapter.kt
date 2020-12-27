@@ -35,12 +35,10 @@
 package com.raywenderlich.android.rwquotes.ui
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.raywenderlich.android.rwquotes.R
 import com.raywenderlich.android.rwquotes.data.Quote
-import kotlinx.android.synthetic.main.rwquote_item.view.*
+import com.raywenderlich.android.rwquotes.databinding.RwquoteItemBinding
 
 
 /**
@@ -48,13 +46,13 @@ import kotlinx.android.synthetic.main.rwquote_item.view.*
  * Contact: lizama.enzo@gmail.com
  */
 
-class QuoteAdapter() : RecyclerView.Adapter<QuoteViewHolder>() {
+class QuoteAdapter(private val clickListener: ClickListener) : RecyclerView.Adapter<QuoteAdapter.QuoteViewHolder>() {
 
   private var quotes: List<Quote> = listOf()
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): QuoteViewHolder {
-    val view = LayoutInflater.from(parent.context).inflate(R.layout.rwquote_item, parent, false)
-    return QuoteViewHolder(view)
+    val rwquoteItemBinding = RwquoteItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+    return QuoteViewHolder(rwquoteItemBinding)
   }
 
   override fun onBindViewHolder(holder: QuoteViewHolder, position: Int) {
@@ -69,13 +67,19 @@ class QuoteAdapter() : RecyclerView.Adapter<QuoteViewHolder>() {
     notifyDataSetChanged()
   }
 
+  inner class QuoteViewHolder(val rwquoteItemBinding: RwquoteItemBinding) : RecyclerView.ViewHolder(rwquoteItemBinding.root) {
+    fun bind(quote: Quote) {
+      rwquoteItemBinding.quoteText.text = quote.text
+      rwquoteItemBinding.quoteAuthor.text = quote.author
+      rwquoteItemBinding.quoteDate.text = quote.date
+
+      rwquoteItemBinding.root.setOnClickListener {
+        clickListener.onClick(quote)
+      }
+    }
+  }
 }
 
-
-class QuoteViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-  fun bind(quote: Quote) {
-    itemView.quoteText.text = quote.text
-    itemView.quoteAuthor.text = quote.author
-    itemView.quoteDate.text = quote.date
-  }
+interface ClickListener {
+  fun onClick(quote: Quote)
 }

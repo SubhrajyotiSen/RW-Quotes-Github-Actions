@@ -46,9 +46,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.raywenderlich.android.rwquotes.R
 import com.raywenderlich.android.rwquotes.data.Quote
 import com.raywenderlich.android.rwquotes.data.QuotesRepositoryImpl
+import com.raywenderlich.android.rwquotes.databinding.ActivityMainBinding
 import com.raywenderlich.android.rwquotes.ui.viewmodel.QuoteViewModelFactory
 import com.raywenderlich.android.rwquotes.ui.viewmodel.QuotesViewModel
-import kotlinx.android.synthetic.main.activity_main.*
 
 /**
  * Main Screen
@@ -58,11 +58,14 @@ class MainActivity : AppCompatActivity() {
   private lateinit var quotesViewModel: QuotesViewModel
   private lateinit var quoteAdapter: QuoteAdapter
 
+  private lateinit var activityMainBinding: ActivityMainBinding
+
   override fun onCreate(savedInstanceState: Bundle?) {
 
     setTheme(R.style.AppTheme)
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_main)
+    activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
+    setContentView(activityMainBinding.root)
 
     quotesViewModel = ViewModelProvider(
         this,
@@ -72,7 +75,7 @@ class MainActivity : AppCompatActivity() {
 
     quotesViewModel.dataLoading.observe(this, Observer { value ->
       value?.let { show ->
-        loading_spinner.visibility = if (show) View.VISIBLE else View.GONE
+        activityMainBinding.loadingSpinner.visibility = if (show) View.VISIBLE else View.GONE
       }
     })
 
@@ -80,15 +83,25 @@ class MainActivity : AppCompatActivity() {
       quoteAdapter.setQuotes(it)
     })
 
-    quoteAdapter = QuoteAdapter()
+    quoteAdapter = QuoteAdapter(clickListener = object : ClickListener {
+      override fun onClick(quote: Quote) {
+        val intent = Intent(this@MainActivity, AddEditActivity::class.java)
+        intent.apply {
+          putExtra(AddEditActivity.EXTRA_ID, quote.id)
+          putExtra(AddEditActivity.EXTRA_AUTHOR, quote.author)
+          putExtra(AddEditActivity.EXTRA_TEXT, quote.text)
+          putExtra(AddEditActivity.EXTRA_DATE, quote.date)
+        }
+        startActivityForResult(intent, EDIT_QUOTE_REQUEST_CODE)
+      }
+    })
 
-    quotesRecyclerView.apply {
+    activityMainBinding.quotesRecyclerView.apply {
       layoutManager = LinearLayoutManager(applicationContext)
-      setHasFixedSize(true)
       adapter = quoteAdapter
     }
 
-    addQuoteFloatingButton.setOnClickListener {
+    activityMainBinding.addQuoteFloatingButton.setOnClickListener {
       val intent = Intent(this, AddEditActivity::class.java)
       startActivityForResult(intent, ADD_QUOTE_REQUEST_CODE)
     }
@@ -113,6 +126,7 @@ class MainActivity : AppCompatActivity() {
         EDIT_QUOTE_REQUEST_CODE -> {
           val intentData = data!!
           val updateQuote = Quote(
+              id = intentData.getIntExtra(AddEditActivity.EXTRA_ID, -1),
               text = intentData.getStringExtra(AddEditActivity.EXTRA_TEXT)!!,
               author = intentData.getStringExtra(AddEditActivity.EXTRA_AUTHOR)!!,
               date = intentData.getStringExtra(AddEditActivity.EXTRA_DATE)!!

@@ -32,8 +32,11 @@
  * THE SOFTWARE.
  */
 
+@file:Suppress("UNCHECKED_CAST")
+
 package com.raywenderlich.android.rwquotes.ui.viewmodel
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.raywenderlich.android.rwquotes.data.QuotesRepository
@@ -45,6 +48,7 @@ import kotlinx.coroutines.CoroutineDispatcher
  * Contact: lizama.enzo@gmail.com
  */
 
+@SuppressLint("UNCHECKED_CAST")
 class QuoteViewModelFactory(
     private val repository: QuotesRepository
 ) : ViewModelProvider.Factory {
