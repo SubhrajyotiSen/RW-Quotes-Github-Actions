@@ -4,9 +4,9 @@ buildscript {
 
   ext {
     kotlin_version = '1.4.21'
-    compileSdkVersion = 28
+    compileSdkVersion = 29
     targetSdkVersion = compileSdkVersion
-    minSdkVersion = 24
+    minSdkVersion = 21
   }
 
   repositories {
