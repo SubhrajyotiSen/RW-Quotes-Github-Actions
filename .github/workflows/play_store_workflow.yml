@@ -47,7 +47,7 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
           packageName: com.raywenderlich.android.rwquotes
-          releaseFile: app-release-unsigned-signed.apk
+          releaseFiles: app-release-unsigned-signed.apk
           track: internal
           userFraction: 0.50
           mappingFile: mapping.txt
