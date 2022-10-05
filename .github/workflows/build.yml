@@ -1,10 +1,5 @@
-on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
+name: Deploy to Play Store
+
 jobs:
   build_app:
     runs-on: [ubuntu-latest]
