@@ -41,5 +41,5 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: release.apk
-      - name: unzip
-        run : unzip release.apk
+      - name : ls
+        run : ls "/home/runner/work/RW-Quotes-Github-Actions/RW-Quotes-Github-Actions"
